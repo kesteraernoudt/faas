@@ -1,0 +1,9 @@
+
+https://www.answertopia.com/ubuntu/creating-an-ubuntu-kvm-networked-bridge-interface/
+
+
+virsh net-define ./bridge.xml 
+virsh net-start br0
+virsh net-autostart br0
+virsh net-list --all
+
