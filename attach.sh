@@ -36,12 +36,17 @@ fi
 export OS=$1
 export DEV=$2
 
-#not sure what to pick for SLOT. Testing shows that on q35 systems, SLOT 0x00 works, and on i440fx systems, slot 0x01 works...
-SLOT="01"
+#not sure what to pick for SLOT/BUS on guest.
+#Testing shows that on q35 systems, SLOT 0x00 works, with BUS number the unique device number of the pci on the host
+#On i440fx we need to use bus 0x00, and we use a unique slot which is the device number on the host
+SLOT=$2
+GUESTBUS="00"
 if $(virsh dumpxml $OS | grep q35 &> /dev/null); then
 	SLOT="00"
+	GUESTBUS=$2
 fi
 export SLOT
+export GUESTBUS
 
 CMD=$(basename $0)
 COMMAND=${CMD%.sh}
