@@ -1,8 +1,9 @@
 #!/bin/bash
 
 if [ $# -lt 2 ]; then
-	echo "Usage: $0 [-u] <OS name> <pcie slot>"
+	echo "Usage: $0 [-u] [-t] <OS name> <pcie slot>"
 	echo "           -u: only map user function"
+	echo "           -t: keep temp files"
 	echo "For example: $0 centos7.5 af"
 	echo
 	echo "OS list:"
@@ -27,11 +28,17 @@ if [ $# -lt 2 ]; then
 	exit -1
 fi
 
+KEEP_TEMP=0
 MAP_MGMT=1
 if [ "$1" = "-u" ]; then
 	MAP_MGMT=0
 	shift
 fi
+if [ "$1" = "-t" ]; then
+	KEEP_TEMP=1
+	shift
+fi
+
 
 export OS=$1
 export DEV=$2
@@ -59,5 +66,7 @@ fi
 envsubst < pass-user.xml_base > pass-user-$DEV-$OS.xml
 virsh $COMMAND-device $OS --file pass-user-$DEV-$OS.xml --config
 
-rm -f pass-mgmt-$DEV-$OS.xml pass-user-$DEV-$OS.xml
+if [ $KEEP_TEMP -eq 0 ]; then
+   rm -f pass-mgmt-$DEV-$OS.xml pass-user-$DEV-$OS.xml
+fi
 
